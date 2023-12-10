@@ -14,6 +14,7 @@ from pathlib import Path
 import os,ast
 from dotenv import load_dotenv
 from import_export.formats.base_formats import CSV,XLSX
+from datetime import timedelta
 
 load_dotenv()
 
@@ -45,13 +46,18 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "rest_framework_gis",
     "corsheaders",
     "accounts",
     "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
     "djoser",
     "Data_Analyst",
     "import_export",
     "rest_framework_datatables",
+    "django.contrib.gis",
+    "django_filters"
+    
     
 ]
 
@@ -91,9 +97,13 @@ WSGI_APPLICATION = "core.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'postgres', 
+        'USER': 'postgres',
+        'PASSWORD': 'root',
+        'HOST': '127.0.0.1', 
+        'PORT': '5432',
     }
 }
 
@@ -159,6 +169,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        
     ),
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
@@ -166,10 +177,9 @@ REST_FRAMEWORK = {
         'rest_framework_datatables_editor.renderers.DatatablesRenderer',
     ),
     'DEFAULT_FILTER_BACKENDS': (
-        'rest_framework_datatables_editor.filters.DatatablesFilterBackend',
+        'django_filters.rest_framework.DjangoFilterBackend',
     ),
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework_datatables.pagination.DatatablesPageNumberPagination',
-    'PAGE_SIZE': 50,
+    
 }
 
 ## JWT AUTHORIZATION
@@ -179,6 +189,10 @@ SIMPLE_JWT = {
 
 ##DJOSER SETTINGS
 DJOSER = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
     'LOGIN_FIELD':'email',
     'USER_CREATE_PASSWORD_RETYPE':True,
     'USERNAME_CHANGED_EMAIL_CONFIRMATION':True,

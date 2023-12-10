@@ -21,14 +21,21 @@ from django.views.generic import TemplateView
 from rest_framework import routers
 from Data_Analyst import views
 
-urlpatterns = [
-     path("admin/",admin.site.urls),
-    path("auth/",include("djoser.urls")),
-    path("auth/",include("djoser.urls.jwt")),
-    path()
-    
+router = routers.DefaultRouter()
+router.register(r'villages', views.VillageBoundaryViewset,basename="village")
+router.register(r'mapping',views.VillageLocalityViewset,basename='mapping')
 
+urlpatterns = [
+    
+     path("admin/",admin.site.urls),
+    path('auth/',include("djoser.urls")),
+    path('auth/',include("djoser.urls.jwt")),
+    path('auth/',include('djoser.urls.authtoken')),
+    path('',include(router.urls)),
+    
     
 ]
 
+urlpatterns += router.urls
 urlpatterns +=  [re_path(r'^.*',TemplateView.as_view(template_name='index.html'))]
+

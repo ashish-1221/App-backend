@@ -1,12 +1,26 @@
-from django.shortcuts import render
+from .serializers import VillageBoundaryModelSerializer
 from rest_framework import viewsets
 from .models import *
-from .serializers import VillageMappingFileSerializer
+from django_filters import rest_framework as filters
+from rest_framework.permissions import IsAuthenticated
 
-def index(request):
-    return render(request, 'albums/albums.html')
+class VillageBoundaryViewsetFilter(filters.FilterSet):
+    class Meta:
+        model = VillageBoundaryModel
+        fields = ['state_name']
+
+class VillageBoundaryViewset(viewsets.ModelViewSet):
+    #authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes=[IsAuthenticated]
+    queryset = VillageBoundaryModel.objects.all()
+    serializer_class = VillageBoundaryModelSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = ('state_name',)
+
+# class VillageLocalityViewsetFilter(filters.FilterSet):
+#     class Meta:
+#         model = VillageLocalityModel
+#         fields = ['state_name','']
 
 
-class VillageMappingFileViewSet(viewsets.ModelViewSet):
-    queryset = VillageMappingFile.objects.all().order_by('state')
-    serializer_class = VillageMappingFileSerializer
+    
